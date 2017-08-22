@@ -1,0 +1,86 @@
+[
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "${ENVIRONMENT}"
+  },
+  {
+    "ParameterKey": "Application",
+    "ParameterValue": "${APPLICATION}"
+  },
+  {
+    "ParameterKey": "Role",
+    "ParameterValue": "${ROLE}"
+  },
+  {
+    "ParameterKey": "VPCStack",
+    "ParameterValue": "${VPC_STACK_NAME}"
+  },
+  {
+    "ParameterKey": "DatadogKey",
+    "ParameterValue": "${DATADOG_KEY}"
+  },
+  {
+    "ParameterKey": "SSHLocation",
+    "ParameterValue": "${SSH_LOCATION}"
+  },
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "${KEY_NAME}"
+  },
+  {
+    "ParameterKey": "DesiredCapacity",
+    "ParameterValue": "${DESIRED_CAPACITY}"
+  },
+  {
+    "ParameterKey": "MaxSize",
+    "ParameterValue": "${MAX_SIZE}"
+  },
+  {
+    "ParameterKey": "MinSize",
+    "ParameterValue": "${MIN_SIZE}"
+  },
+  {
+    "ParameterKey": "Domain",
+    "ParameterValue": "${DOMAIN}"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "${INSTANCE_TYPE}"
+  },
+  {
+    "ParameterKey": "CleanupContainerImage",
+    "ParameterValue": "${CLEANUPCONTAINERIMAGE}"
+  },
+  {
+    "ParameterKey": "ConfigTemplatesPath",
+    "ParameterValue": "${CONFIG_TEMPLATES_URL}"
+  },
+  {
+    "ParameterKey": "DockerRegistryURL",
+    "ParameterValue": "${DOCKER_REGISTRY_URL}"
+  },
+  {
+    "ParameterKey": "DockerRegistryUser",
+    "ParameterValue": "${DOCKER_REGISTRY_USER}"
+  },
+  {
+    "ParameterKey": "DockerRegistryPass",
+    "ParameterValue": "${DOCKER_REGISTRY_PASS}"
+  },
+  {
+    "ParameterKey": "DockerRegistryEmail",
+    "ParameterValue": "${DOCKER_REGISTRY_EMAIL}"
+  },
+  {
+    "ParameterKey": "UsePrivateDockerRegistry",
+    "ParameterValue": "${DOCKER_PRIVATE_REGISTRY}"
+  },
+  {
+    "ParameterKey": "CloudFormationBucket",
+    "ParameterValue": "${TEMPLATE_BUCKET}"
+  },
+  {
+    "ParameterKey": "CertificateARN",
+    "ParameterValue": "${CERT_ARN}"
+  }
+]

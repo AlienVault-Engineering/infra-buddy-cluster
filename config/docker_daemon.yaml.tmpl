@@ -1,0 +1,12 @@
+init_config:
+
+instances:
+  -
+    url: "unix://var/run/docker.sock"
+    new_tag_names: true
+    tags:
+        -   Application:${APPLICATION}
+        -   Role:${ROLE}
+        -   Environment:${ENVIRONMENT}
+        -   System:${APPLICATION}-${ROLE}
+        -   Region:${REGION}

@@ -1,0 +1,62 @@
+{
+  "INSTANCE_TYPE": {
+    "type": "property",
+    "key": "INSTANCE_TYPE",
+    "default": "t2.medium"
+  },
+  "MAX_SIZE": {
+    "type": "property",
+    "key": "MAX_SIZE",
+    "default": 5
+  },
+  "MIN_SIZE": {
+    "type": "property",
+    "key": "MIN_SIZE",
+    "default": 1
+  },
+  "DESIRED_CAPACITY": {
+    "type": "property",
+    "key": "DESIRED_CAPACITY",
+    "default": 3
+  },
+  "SSH_LOCATION": {
+    "type": "property",
+    "key": "SSH_LOCATION",
+    "default": "10.0.0.0/16"
+  },
+  "CERT_ARN": {
+    "type": "property",
+    "key": "CERT_ARN",
+    "default": ""
+  },
+  "DOMAIN": {
+    "type": "property",
+    "key": "DEFAULT_DOMAIN",
+    "default": ""
+  },
+  "DOCKER_REGISTRY_URL": {
+    "type": "property",
+    "key": "DOCKER_REGISTRY_URL",
+    "default": ""
+  },
+  "DOCKER_REGISTRY_USER": {
+    "type": "property",
+    "key": "DOCKER_REGISTRY_URL",
+    "default": ""
+  },
+  "DOCKER_REGISTRY_PASS": {
+    "type": "property",
+    "key": "DOCKER_REGISTRY_PASS",
+    "default": ""
+  },
+  "DOCKER_REGISTRY_EMAIL": {
+    "type": "property",
+    "key": "DOCKER_REGISTRY_EMAIL",
+    "default": ""
+  },
+  "DOCKER_PRIVATE_REGISTRY": {
+    "type": "property",
+    "key": "DOCKER_PRIVATE_REGISTRY",
+    "default": false
+  }
+}
