@@ -1,17 +1,17 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "ECS: Cluster",
+  "Description": "ECS: Cluster with autoscaling group and integrated datadog monitoring. Optimized for use with infra-buddy",
   "Parameters": {
     "Environment": {
-      "Description": "The environment parameter for the docker container",
+      "Description": "The environment this cluster is for.",
       "Type": "String"
     },
     "Application": {
-      "Description": "The application",
+      "Description": "The application this cluster is for.",
       "Type": "String"
     },
     "Role": {
-      "Description": "The role",
+      "Description": "The role which should always be 'cluster' in the infra-buddy usecases.",
       "Type": "String"
     },
     "SSHLocation": {
@@ -31,7 +31,7 @@
       "Description": "Number of instances to launch in your ECS cluster"
     },
     "VPCStack": {
-      "Description": "The stack name of the vpc to deploy",
+      "Description": "The stack name of the vpc deployed by infra-buddy that will be the target of this cluster.",
       "Type": "String"
     },
     "DatadogKey": {
@@ -39,27 +39,27 @@
       "Type": "String"
     },
     "Domain": {
-      "Description": "The primary domain",
+      "Description": "The primary domain for use in creating DNS entries.",
       "Type": "String"
     },
     "CloudFormationBucket": {
-      "Description": "The bucket with the config files for the deploy",
+      "Description": "The bucket with the config files for use in EC2 instance initialization.",
       "Type": "String"
     },
     "DockerRegistryUser": {
-      "Description": "The username for the docker registry",
+      "Description": "The username for the private docker registry.",
       "Type": "String"
     },
     "DockerRegistryURL": {
-      "Description": "The URL for the docker registry",
+      "Description": "The URL for the private docker registry",
       "Type": "String"
     },
     "DockerRegistryEmail": {
-      "Description": "The email for the docker registry",
+      "Description": "The email for the private docker registry",
       "Type": "String"
     },
     "DockerRegistryPass": {
-      "Description": "The docker registry pass",
+      "Description": "The private docker registry pass",
       "Type": "String",
       "NoEcho": true
     },
@@ -74,10 +74,6 @@
     "MinSize": {
       "Type": "Number",
       "Description": "Min number of instances that can be launched in your ECS cluster"
-    },
-    "CleanupContainerImage": {
-      "Description": "Container image to use for the cleanup container",
-      "Type": "String"
     },
     "ConfigTemplatesPath": {
       "Description": "Configuration templates path in s3",
@@ -786,7 +782,7 @@
       "Value": {
         "Fn::Sub": "${Environment}-${Application}-bastion.${Domain}"
       },
-      "Description": "Primary DNS for stack",
+      "Description": "DNS entry for bastion host to access the ECS cluster.",
       "Export": {
         "Name": {
           "Fn::Sub": "${AWS::StackName}-PrimaryDNS"
@@ -797,6 +793,7 @@
       "Value": {
         "Ref": "ECSCluster"
       },
+      "Description": "The ARN for the ECS cluster.",
       "Export": {
         "Name": {
           "Fn::Sub": "${AWS::StackName}-ECSCluster"
@@ -818,7 +815,7 @@
       }
     },
     "ElasticLoadBalancerARN": {
-      "Description": "The DNSName of the load balancer",
+      "Description": "The ARN of the load balancer",
       "Value": {
         "Ref": "EcsElasticLoadBalancer"
       },
@@ -829,6 +826,8 @@
       }
     },
     "ListenerARN": {
+      "Description": "The ARN of the HTTP listener connected to the Application ELB.",
+
       "Value": {
         "Ref": "ELBHTTPListener"
       },
@@ -839,6 +838,7 @@
       }
     },
     "DefaultTargetGroup": {
+      "Description": "The ARN of the default target group associated with the HTTP listener.",
       "Value": {
         "Ref": "DefaultTargetGroup"
       },
@@ -849,6 +849,7 @@
       }
     },
     "ECSAutoScalingGroup": {
+      "Description": "The ARN of the ECS AutoScale group associated with the ECS cluster.",
       "Value": {
         "Ref": "ECSAutoScalingGroup"
       },

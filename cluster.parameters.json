@@ -48,10 +48,6 @@
     "ParameterValue": "${INSTANCE_TYPE}"
   },
   {
-    "ParameterKey": "CleanupContainerImage",
-    "ParameterValue": "${CLEANUPCONTAINERIMAGE}"
-  },
-  {
     "ParameterKey": "ConfigTemplatesPath",
     "ParameterValue": "${CONFIG_TEMPLATES_URL}"
   },
