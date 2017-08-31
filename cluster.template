@@ -38,10 +38,6 @@
       "Description": "The datadog key",
       "Type": "String"
     },
-    "Domain": {
-      "Description": "The primary domain for use in creating DNS entries.",
-      "Type": "String"
-    },
     "CloudFormationBucket": {
       "Description": "The bucket with the config files for use in EC2 instance initialization.",
       "Type": "String"
@@ -122,10 +118,6 @@
         "cc2.8xlarge"
       ],
       "ConstraintDescription": "must be a valid EC2 instance type."
-    },
-    "CertificateARN": {
-      "Description": "The ARN of the SSL certificate in IAM to use for the ELB",
-      "Type": "String"
     }
   },
   "Mappings": {
@@ -309,9 +301,9 @@
         },
         "Port": "443",
         "Protocol": "HTTPS",
-        "Certificates" : [ { "CertificateArn":  {
-          "Ref": "CertificateARN"
-        } } ]
+        "Certificates" : [ { "CertificateArn":
+           { "Fn::ImportValue": {"Fn::Sub": "${VPCStack}-PrimaryCertificate"} }
+        }  ]
       }
     },
     "DefaultTargetGroup": {

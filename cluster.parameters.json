@@ -40,10 +40,6 @@
     "ParameterValue": "${MIN_SIZE}"
   },
   {
-    "ParameterKey": "Domain",
-    "ParameterValue": "${DOMAIN}"
-  },
-  {
     "ParameterKey": "InstanceType",
     "ParameterValue": "${INSTANCE_TYPE}"
   },
@@ -74,9 +70,5 @@
   {
     "ParameterKey": "CloudFormationBucket",
     "ParameterValue": "${TEMPLATE_BUCKET}"
-  },
-  {
-    "ParameterKey": "CertificateARN",
-    "ParameterValue": "${CERT_ARN}"
   }
 ]

@@ -24,16 +24,6 @@
     "key": "SSH_LOCATION",
     "default": "10.0.0.0/16"
   },
-  "CERT_ARN": {
-    "type": "property",
-    "key": "CERT_ARN",
-    "default": ""
-  },
-  "DOMAIN": {
-    "type": "property",
-    "key": "DEFAULT_DOMAIN",
-    "default": ""
-  },
   "DOCKER_REGISTRY_URL": {
     "type": "property",
     "key": "DOCKER_REGISTRY_URL",
