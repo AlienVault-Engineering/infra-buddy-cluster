@@ -81,83 +81,47 @@
     },
     "InstanceType": {
       "Description": "The EC2 instance type",
-      "Type": "String",
-      "AllowedValues": [
-        "t2.micro",
-        "t2.small",
-        "t2.medium",
-        "t2.large",
-        "t2.xlarge",
-        "t2.2xlarge",
-        "m3.medium",
-        "m4.large",
-        "m3.xlarge",
-        "m3.2xlarge",
-        "c3.large",
-        "c3.xlarge",
-        "c3.2xlarge",
-        "c3.4xlarge",
-        "c3.8xlarge",
-        "c4.large",
-        "c4.xlarge",
-        "c4.2xlarge",
-        "c4.4xlarge",
-        "c4.8xlarge",
-        "r3.large",
-        "r3.xlarge",
-        "r3.2xlarge",
-        "r3.4xlarge",
-        "r3.8xlarge",
-        "i2.xlarge",
-        "i2.2xlarge",
-        "i2.4xlarge",
-        "i2.8xlarge",
-        "d2.xlarge",
-        "d2.2xlarge",
-        "d2.4xlarge",
-        "d2.8xlarge",
-        "hi1.4xlarge",
-        "hs1.8xlarge",
-        "cr1.8xlarge",
-        "cc2.8xlarge"
-      ],
-      "ConstraintDescription": "must be a valid EC2 instance type."
+      "Type": "String"
+    },
+    "DataDriveSize": {
+      "Description": "The size in GB of the /data EBS",
+      "Type": "Number"
     }
   },
   "Mappings": {
     "AWSRegionToAMI": {
       "us-east-1": {
-        "AMIID": "ami-0e297018"
+        "AMIID": "ami-9eb4b1e5"
       },
       "us-east-2": {
-        "AMIID": "ami-43d0f626"
+        "AMIID": "ami-1c002379"
       },
       "us-west-1": {
-        "AMIID": "ami-fcd7f59c"
+        "AMIID": "ami-4a2c192a"
       },
       "us-west-2": {
-        "AMIID": "ami-596d6520"
+        "AMIID": "ami-1d668865"
       },
       "eu-west-1": {
-        "AMIID": "ami-5ae4f83c"
+        "AMIID": "ami-8fcc32f6"
       },
       "eu-west-2": {
-        "AMIID": "ami-ada6b1c9"
+        "AMIID": "ami-cb1101af"
       },
       "eu-central-1": {
-        "AMIID": "ami-25a4004a"
+        "AMIID": "ami-0460cb6b"
       },
       "ap-northeast-1": {
-        "AMIID": "ami-3a000e5d"
+        "AMIID": "ami-b743bed1"
       },
       "ap-southeast-1": {
-        "AMIID": "ami-2428ab47"
+        "AMIID": "ami-9d1f7efe"
       },
       "ap-southeast-2": {
-        "AMIID": "ami-ac5849cf"
+        "AMIID": "ami-c1a6bda2"
       },
       "ca-central-1": {
-        "AMIID": "ami-8cfb44e8"
+        "AMIID": "ami-b677c9d2"
       }
     }
   },
@@ -655,15 +619,29 @@
         "KeyName": {
           "Ref": "KeyName"
         },
+        "BlockDeviceMappings" : [
+          {
+            "DeviceName" : "/dev/xvdb",
+            "Ebs" : {
+              "DeleteOnTermination": "true",
+              "VolumeSize" : { "Ref": "DataDriveSize" },
+              "VolumeType" : "gp2"
+            }
+          }
+        ],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
               "",
               [
                 "#!/bin/bash -xe\n",
-                "# Version 1.0\n",
+                "# Version 1.1\n",
                 "yum -y install aws-cfn-bootstrap aws-cli jq nfs-utils\n",
                 "yum -y update\n",
+                "mkfs -t ext4 /dev/xvdb\n",
+                "mkdir /data\n",
+                "mount /dev/xvdb /data\n",
+                "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n",
                 "/opt/aws/bin/cfn-init -v ",
                 "         --stack ",
                 {
@@ -754,12 +732,23 @@
     "primarydns": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
-        "HostedZoneName": {
-          "Fn::Sub": "${Domain}."
-        },
-        "Name": {
-          "Fn::Sub": "${Environment}-${Application}.${Domain}."
-        },
+        "HostedZoneName": {"Fn::Join":
+                [ "",
+                  [
+                    { "Fn::ImportValue": {"Fn::Sub": "${VPCStack}-PrimaryDomain"} },
+                    "."
+                  ]
+                ]
+                },
+        "Name":{"Fn::Join":
+                        [ "",
+                          [
+                            {"Fn::Sub": "${Environment}-${Application}."},
+                            { "Fn::ImportValue": {"Fn::Sub": "${VPCStack}-PrimaryDomain"} }
+
+                          ]
+                        ]
+                        } ,
         "Type": "CNAME",
         "TTL": "900",
         "ResourceRecords": [
@@ -775,10 +764,16 @@
   },
   "Outputs": {
     "PrimaryDNS": {
-      "Value": {
-        "Fn::Sub": "${Environment}-${Application}-bastion.${Domain}"
-      },
-      "Description": "DNS entry for bastion host to access the ECS cluster.",
+      "Value": {"Fn::Join":
+                      [ "",
+                        [
+                          {"Fn::Sub": "${Environment}-${Application}-db."},
+                          { "Fn::ImportValue": {"Fn::Sub": "${VPCStack}-PrimaryDomain"} }
+
+                        ]
+                      ]
+                      },
+      "Description": "DNS entry for the ELB to access the services.",
       "Export": {
         "Name": {
           "Fn::Sub": "${AWS::StackName}-PrimaryDNS"
@@ -830,6 +825,18 @@
       "Export": {
         "Name": {
           "Fn::Sub": "${AWS::StackName}-ListenerARN"
+        }
+      }
+    },
+    "HTTPSListenerARN": {
+      "Description": "The ARN of the HTTP listener connected to the Application ELB.",
+
+      "Value": {
+        "Ref": "ELBHTTPSListener"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-HTTPSListenerARN"
         }
       }
     },
