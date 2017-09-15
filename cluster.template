@@ -10,6 +10,10 @@
       "Description": "The application this cluster is for.",
       "Type": "String"
     },
+    "ShortApplicationName": {
+      "Description": "The vpc application name this cluster is for.",
+      "Type": "String"
+    },
     "Role": {
       "Description": "The role which should always be 'cluster' in the infra-buddy usecases.",
       "Type": "String"
@@ -230,7 +234,7 @@
           {
             "Key": "access_logs.s3.bucket",
             "Value": {
-              "Fn::Sub": "${Application}-logs"
+              "Fn::Sub": "${ShortApplicationName}-logs"
             }
           },
           {

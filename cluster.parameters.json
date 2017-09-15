@@ -8,6 +8,10 @@
     "ParameterValue": "${APPLICATION}"
   },
   {
+    "ParameterKey": "ShortApplicationName",
+    "ParameterValue": "${VPCAPP}"
+  },
+  {
     "ParameterKey": "Role",
     "ParameterValue": "${ROLE}"
   },
