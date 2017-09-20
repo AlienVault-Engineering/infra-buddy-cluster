@@ -471,7 +471,7 @@
                       "\n",
                       "ECS_AVAILABLE_LOGGING_DRIVERS=[\"json-file\",\"awslogs\"]\n",
                       "EOF\n",
-                      "start ecs\n",
+                      "restart ecs\n",
                       "\n",
                       "\n"
                     ]
