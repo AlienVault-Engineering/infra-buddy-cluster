@@ -74,5 +74,9 @@
   {
     "ParameterKey": "CloudFormationBucket",
     "ParameterValue": "${TEMPLATE_BUCKET}"
+  },
+  {
+    "ParameterKey": "DataDriveSize",
+    "ParameterValue": "${DATA_DRIVE_SIZE}"
   }
 ]

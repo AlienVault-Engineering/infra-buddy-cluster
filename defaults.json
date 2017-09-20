@@ -48,5 +48,10 @@
     "type": "property",
     "key": "DOCKER_PRIVATE_REGISTRY",
     "default": false
+  },
+  "DATA_DRIVE_SIZE": {
+    "type": "property",
+    "key": "DATA_DRIVE_SIZE",
+    "default": 1
   }
 }
