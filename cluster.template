@@ -198,7 +198,7 @@
           {
             "Key": "access_logs.s3.bucket",
             "Value": {
-              "Fn::Sub": "${ShortApplicationName}-logs"
+              "Fn::Sub": "${Environment}-${ShortApplicationName}-logs"
             }
           },
           {
