@@ -133,6 +133,18 @@
         },
         "True"
       ]
+    },
+    "DeployDataDog": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "DatadogKey"
+            },
+            ""
+          ]
+        }
+      ]
     }
   },
   "Resources": {
@@ -269,9 +281,15 @@
         },
         "Port": "443",
         "Protocol": "HTTPS",
-        "Certificates" : [ { "CertificateArn":
-           { "Fn::ImportValue": {"Fn::Sub": "${VPCStack}-PrimaryCertificate"} }
-        }  ]
+        "Certificates": [
+          {
+            "CertificateArn": {
+              "Fn::ImportValue": {
+                "Fn::Sub": "${VPCStack}-PrimaryCertificate"
+              }
+            }
+          }
+        ]
       }
     },
     "DefaultTargetGroup": {
@@ -401,9 +419,9 @@
         "LaunchConfigurationName": {
           "Ref": "ContainerInstances"
         },
-        "MinSize":{
-                  "Ref": "MinSize"
-                },
+        "MinSize": {
+          "Ref": "MinSize"
+        },
         "MaxSize": {
           "Ref": "MaxSize"
         },
@@ -444,6 +462,21 @@
         "AWS::CloudFormation::Init": {
           "config": {
             "commands": {
+              "01_mount_data_drive": {
+                "command": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "#!/bin/bash\n",
+                      "set -x\n",
+                      "mkfs -t ext4 /dev/xvdb\n",
+                      "mkdir /data\n",
+                      "mount /dev/xvdb /data\n",
+                      "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n"
+                    ]
+                  ]
+                }
+              },
               "01_add_instance_to_cluster": {
                 "command": {
                   "Fn::Join": [
@@ -480,19 +513,33 @@
               },
               "02_configure_data_dog": {
                 "command": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "#!/bin/bash\n",
-                      "set -x\n",
-                      "DD_API_KEY=",
-                      {
-                        "Ref": "DatadogKey"
-                      },
-                      " bash -c \"$(curl -L https://raw.githubusercontent.com/DataDog/dd-agent/master/packaging/datadog-agent/source/install_agent.sh)\"\n",
-                      "usermod -a -G docker dd-agent\n",
-                      "/etc/init.d/datadog-agent restart\n"
-                    ]
+                  "Fn::If": [
+                    "DeployDataDog",
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "#!/bin/bash\n",
+                          "set -x\n",
+                          "DD_API_KEY=",
+                          {
+                            "Ref": "DatadogKey"
+                          },
+                          " bash -c \"$(curl -L https://raw.githubusercontent.com/DataDog/dd-agent/master/packaging/datadog-agent/source/install_agent.sh)\"\n",
+                          "usermod -a -G docker dd-agent\n",
+                          "/etc/init.d/datadog-agent restart\n"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "#!/bin/bash\n",
+                          ""
+                        ]
+                      ]
+                    }
                   ]
                 }
               }
@@ -619,13 +666,15 @@
         "KeyName": {
           "Ref": "KeyName"
         },
-        "BlockDeviceMappings" : [
+        "BlockDeviceMappings": [
           {
-            "DeviceName" : "/dev/xvdb",
-            "Ebs" : {
+            "DeviceName": "/dev/xvdb",
+            "Ebs": {
               "DeleteOnTermination": "true",
-              "VolumeSize" : { "Ref": "DataDriveSize" },
-              "VolumeType" : "gp2"
+              "VolumeSize": {
+                "Ref": "DataDriveSize"
+              },
+              "VolumeType": "gp2"
             }
           }
         ],
@@ -638,10 +687,6 @@
                 "# Version 1.1\n",
                 "yum -y install aws-cfn-bootstrap aws-cli jq nfs-utils\n",
                 "yum -y update\n",
-                "mkfs -t ext4 /dev/xvdb\n",
-                "mkdir /data\n",
-                "mount /dev/xvdb /data\n",
-                "echo \"/dev/xvdb /data ext4 defaults,nofail 0 2\" >> /etc/fstab\n",
                 "/opt/aws/bin/cfn-init -v ",
                 "         --stack ",
                 {
@@ -732,23 +777,34 @@
     "primarydns": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
-        "HostedZoneName": {"Fn::Join":
-                [ "",
-                  [
-                    { "Fn::ImportValue": {"Fn::Sub": "${VPCStack}-PrimaryDomain"} },
-                    "."
-                  ]
-                ]
-                },
-        "Name":{"Fn::Join":
-                        [ "",
-                          [
-                            {"Fn::Sub": "${Environment}-${Application}."},
-                            { "Fn::ImportValue": {"Fn::Sub": "${VPCStack}-PrimaryDomain"} }
-
-                          ]
-                        ]
-                        } ,
+        "HostedZoneName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::ImportValue": {
+                  "Fn::Sub": "${VPCStack}-PrimaryDomain"
+                }
+              },
+              "."
+            ]
+          ]
+        },
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::Sub": "${Environment}-${Application}."
+              },
+              {
+                "Fn::ImportValue": {
+                  "Fn::Sub": "${VPCStack}-PrimaryDomain"
+                }
+              }
+            ]
+          ]
+        },
         "Type": "CNAME",
         "TTL": "900",
         "ResourceRecords": [
@@ -764,15 +820,21 @@
   },
   "Outputs": {
     "PrimaryDNS": {
-      "Value": {"Fn::Join":
-                      [ "",
-                        [
-                          {"Fn::Sub": "${Environment}-${Application}-db."},
-                          { "Fn::ImportValue": {"Fn::Sub": "${VPCStack}-PrimaryDomain"} }
-
-                        ]
-                      ]
-                      },
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Fn::Sub": "${Environment}-${Application}-db."
+            },
+            {
+              "Fn::ImportValue": {
+                "Fn::Sub": "${VPCStack}-PrimaryDomain"
+              }
+            }
+          ]
+        ]
+      },
       "Description": "DNS entry for the ELB to access the services.",
       "Export": {
         "Name": {
@@ -818,7 +880,6 @@
     },
     "ListenerARN": {
       "Description": "The ARN of the HTTP listener connected to the Application ELB.",
-
       "Value": {
         "Ref": "ELBHTTPListener"
       },
@@ -830,7 +891,6 @@
     },
     "HTTPSListenerARN": {
       "Description": "The ARN of the HTTP listener connected to the Application ELB.",
-
       "Value": {
         "Ref": "ELBHTTPSListener"
       },
