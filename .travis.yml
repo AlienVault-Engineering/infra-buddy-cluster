@@ -1,0 +1,5 @@
+language: python
+python: '2.7'
+install: pip install infra-buddy --upgrade
+script: infra-buddy validate-template --service-template-directory . --service-type
+  cluster
