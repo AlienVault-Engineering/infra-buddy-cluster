@@ -934,7 +934,6 @@
         "Ref": "ECSCluster"
       },
       "Description": "The ARN for the ECS cluster.",
-      "Condition": "UseCluster",
       "Export": {
         "Name": {
           "Fn::Sub": "${AWS::StackName}-ECSCluster"
