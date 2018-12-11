@@ -86,6 +86,22 @@
     "DataDriveSize": {
       "Description": "The size in GB of the /data EBS",
       "Type": "Number"
+    },
+    "OptionalDomain": {
+      "Description": "The domain to override the primary domain set in the VPC export",
+      "Type": "String"
+    },
+    "OptionalCertificateARN": {
+      "Description": "The certificate ARN for the override of the primary domain set in the VPC export",
+      "Type": "String"
+    },
+    "UseFargate": {
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Description": "'true' to use fargate, 'false' to a cluster with ec2 instances.",
+      "Type": "String"
     }
   },
   "Mappings": {
@@ -142,6 +158,26 @@
               "Ref": "DatadogKey"
             },
             ""
+          ]
+        }
+      ]
+    },
+    "UseDefaultDomain": {
+      "Fn::Equals": [
+        {
+          "Ref": "OptionalDomain"
+        },
+        ""
+      ]
+    },
+    "UseCluster": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "UseFargate"
+            },
+            "true"
           ]
         }
       ]
@@ -284,9 +320,17 @@
         "Certificates": [
           {
             "CertificateArn": {
-              "Fn::ImportValue": {
-                "Fn::Sub": "${VPCStack}-PrimaryCertificate"
-              }
+              "Fn::If": [
+                "UseDefaultDomain",
+                {
+                  "Fn::ImportValue": {
+                    "Fn::Sub": "${VPCStack}-PrimaryCertificate"
+                  }
+                },
+                {
+                  "Ref": "OptionalCertificateARN"
+                }
+              ]
             }
           }
         ]
@@ -321,6 +365,7 @@
     },
     "ECSInstancesSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
+      "Condition": "UseCluster",
       "Properties": {
         "GroupDescription": "ECS Instances Security Group",
         "VpcId": {
@@ -330,10 +375,11 @@
         },
         "SecurityGroupIngress": [
           {
+            "Description": "Ingress from the load balancer",
             "IpProtocol": "tcp",
-            "FromPort": "0",
-            "ToPort": "65535",
-            "CidrIp": "10.0.0.0/8"
+            "SourceSecurityGroupId": {
+              "Ref": "ELBSecurityGroup"
+            }
           },
           {
             "IpProtocol": "tcp",
@@ -359,6 +405,7 @@
     },
     "ECSAutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Condition": "UseCluster",
       "Properties": {
         "Tags": [
           {
@@ -445,6 +492,7 @@
     },
     "ContainerInstances": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Condition": "UseCluster",
       "Metadata": {
         "AWS::CloudFormation::Authentication": {
           "S3AccessCreds": {
@@ -718,6 +766,7 @@
     },
     "EC2Role": {
       "Type": "AWS::IAM::Role",
+      "Condition": "UseCluster",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -766,6 +815,7 @@
     },
     "EC2InstanceProfile": {
       "Type": "AWS::IAM::InstanceProfile",
+      "Condition": "UseCluster",
       "Properties": {
         "Path": "/",
         "Roles": [
@@ -783,9 +833,17 @@
             "",
             [
               {
-                "Fn::ImportValue": {
-                  "Fn::Sub": "${VPCStack}-PrimaryDomain"
-                }
+                "Fn::If": [
+                  "UseDefaultDomain",
+                  {
+                    "Fn::ImportValue": {
+                      "Fn::Sub": "${VPCStack}-PrimaryDomain"
+                    }
+                  },
+                  {
+                    "Ref": "OptionalDomain"
+                  }
+                ]
               },
               "."
             ]
@@ -799,9 +857,17 @@
                 "Fn::Sub": "${Environment}-${Application}."
               },
               {
-                "Fn::ImportValue": {
-                  "Fn::Sub": "${VPCStack}-PrimaryDomain"
-                }
+                "Fn::If": [
+                  "UseDefaultDomain",
+                  {
+                    "Fn::ImportValue": {
+                      "Fn::Sub": "${VPCStack}-PrimaryDomain"
+                    }
+                  },
+                  {
+                    "Ref": "OptionalDomain"
+                  }
+                ]
               }
             ]
           ]
@@ -826,12 +892,20 @@
           "",
           [
             {
-              "Fn::Sub": "${Environment}-${Application}-db."
+              "Fn::Sub": "${Environment}-${Application}."
             },
             {
-              "Fn::ImportValue": {
-                "Fn::Sub": "${VPCStack}-PrimaryDomain"
-              }
+              "Fn::If": [
+                "UseDefaultDomain",
+                {
+                  "Fn::ImportValue": {
+                    "Fn::Sub": "${VPCStack}-PrimaryDomain"
+                  }
+                },
+                {
+                  "Ref": "OptionalDomain"
+                }
+              ]
             }
           ]
         ]
@@ -848,6 +922,7 @@
         "Ref": "ECSCluster"
       },
       "Description": "The ARN for the ECS cluster.",
+      "Condition": "UseCluster",
       "Export": {
         "Name": {
           "Fn::Sub": "${AWS::StackName}-ECSCluster"
@@ -890,6 +965,17 @@
         }
       }
     },
+    "LoadBalancerSGARN": {
+      "Description": "The ARN of the SecurityGroup attached to the Application ELB.",
+      "Value": {
+        "Ref": "ELBSecurityGroup"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-LoadBalancerSecurityGroupARN"
+        }
+      }
+    },
     "HTTPSListenerARN": {
       "Description": "The ARN of the HTTP listener connected to the Application ELB.",
       "Value": {
@@ -914,6 +1000,7 @@
     },
     "ECSAutoScalingGroup": {
       "Description": "The ARN of the ECS AutoScale group associated with the ECS cluster.",
+      "Condition": "UseCluster",
       "Value": {
         "Ref": "ECSAutoScalingGroup"
       },
