@@ -102,55 +102,11 @@
       ],
       "Description": "'true' to use fargate, 'false' to a cluster with ec2 instances.",
       "Type": "String"
-    }
-  },
-  "Mappings": {
-    "AWSRegionToAMI": {
-      "us-east-1": {
-        "AMIID": "ami-aff65ad2"
-      },
-      "us-east-2": {
-        "AMIID": "ami-64300001"
-      },
-      "us-west-1": {
-        "AMIID": "ami-69677709"
-      },
-      "us-west-2": {
-        "AMIID": "ami-40ddb938"
-      },
-      "eu-west-1": {
-        "AMIID": "ami-2d386654"
-      },
-      "eu-west-2": {
-        "AMIID": "ami-2218f945"
-      },
-      "eu-west-3": {
-        "AMIID": "ami-250eb858"
-      },
-      "eu-central-1": {
-        "AMIID": "ami-9fc39c74"
-      },
-      "ap-northeast-1": {
-        "AMIID": "ami-a99d8ad5"
-      },
-      "ap-northeast-2": {
-        "AMIID": "ami-9d56f9f3"
-      },
-      "ap-southeast-1": {
-        "AMIID": "ami-846144f8"
-      },
-      "ap-southeast-2": {
-        "AMIID": "ami-efda148d"
-      },
-      "ca-central-1": {
-        "AMIID": "ami-897ff9ed"
-      },
-      "ap-south-1": {
-        "AMIID": "ami-72edc81d"
-      },
-      "sa-east-1": {
-        "AMIID": "ami-4a7e2826"
-      }
+    },
+    "ECSAmi": {
+      "Description": "ECS-Optimized AMI ID",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
     }
   },
   "Conditions": {
@@ -710,13 +666,7 @@
           }
         ],
         "ImageId": {
-          "Fn::FindInMap": [
-            "AWSRegionToAMI",
-            {
-              "Ref": "AWS::Region"
-            },
-            "AMIID"
-          ]
+          "Ref": "ECSAmi"
         },
         "InstanceType": {
           "Ref": "InstanceType"
