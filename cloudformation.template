@@ -388,7 +388,7 @@
         "SecurityGroupIngress": [
           {
             "Description": "Ingress from the load balancer",
-            "IpProtocol": "tcp",
+            "IpProtocol": "-1",
             "SourceSecurityGroupId": {
               "Ref": "ELBSecurityGroup"
             }
