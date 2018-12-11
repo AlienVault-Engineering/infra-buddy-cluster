@@ -53,5 +53,20 @@
     "type": "property",
     "key": "DATA_DRIVE_SIZE",
     "default": 1
+  },
+  "OPTIONAL_CERTIFICATE_ARN": {
+    "type": "property",
+    "key": "OPTIONAL_CERTIFICATE_ARN",
+    "default": ""
+  },
+  "OPTIONAL_DOMAIN": {
+    "type": "property",
+    "key": "OPTIONAL_DOMAIN",
+    "default": ""
+  },
+  "USE_FARGATE": {
+    "type": "property",
+    "key": "USE_FARGATE",
+    "default": "false"
   }
 }

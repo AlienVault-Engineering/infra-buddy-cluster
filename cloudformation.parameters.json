@@ -78,5 +78,17 @@
   {
     "ParameterKey": "DataDriveSize",
     "ParameterValue": "${DATA_DRIVE_SIZE}"
+  },
+  {
+    "ParameterKey": "OptionalDomain",
+    "ParameterValue": "${OPTIONAL_DOMAIN}"
+  },
+  {
+    "ParameterKey": "OptionalCertificateARN",
+    "ParameterValue": "${OPTIONAL_CERTIFICATE_ARN}"
+  },
+  {
+    "ParameterKey": "UseFargate",
+    "ParameterValue": "${USE_FARGATE}"
   }
 ]
