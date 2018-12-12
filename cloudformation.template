@@ -27,7 +27,7 @@
       "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
     },
     "KeyName": {
-      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Type": "String",
       "Description": "Name of an existing EC2 KeyPair to enable SSH access to the ECS instances"
     },
     "DesiredCapacity": {
