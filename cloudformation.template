@@ -726,6 +726,29 @@
         }
       }
     },
+    "FargateTaskAccessPolicy": {
+      "Type" : "AWS::IAM::ManagedPolicy",
+      "Properties" : {
+        "Path" : "/",
+        "PolicyDocument" : {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ecr:*",
+                "ecs:*",
+                "sqs:*",
+                "logs:*",
+                "cloudwatch:*",
+                "s3:*"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    },
     "EC2Role": {
       "Type": "AWS::IAM::Role",
       "Condition": "UseCluster",
