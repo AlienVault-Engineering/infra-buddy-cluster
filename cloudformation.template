@@ -993,6 +993,17 @@
           "Fn::Sub": "${AWS::StackName}-ECSAutoScalingGroup"
         }
       }
+    },
+    "FargateTaskAccessPolicy": {
+      "Description": "Access policy meant to grant access to containers when running in Fargate",
+      "Value": {
+        "Ref": "FargateTaskAccessPolicy"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-FargateTaskAccessPolicy"
+        }
+      }
     }
   }
 }
