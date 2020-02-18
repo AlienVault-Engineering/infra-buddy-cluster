@@ -743,7 +743,7 @@
                 "cloudwatch:*",
                 "s3:*",
                 "secretsmanager:GetSecretValue",
-                "kms:Decrypt",
+                "kms:Decrypt"
               ],
               "Resource": "*"
             }
