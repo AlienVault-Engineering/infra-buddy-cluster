@@ -741,7 +741,9 @@
                 "sqs:*",
                 "logs:*",
                 "cloudwatch:*",
-                "s3:*"
+                "s3:*",
+                "secretsmanager:GetSecretValue",
+                "kms:Decrypt",
               ],
               "Resource": "*"
             }
@@ -788,7 +790,9 @@
                     "sqs:*",
                     "logs:*",
                     "cloudwatch:*",
-                    "s3:*"
+                    "s3:*",
+                    "secretsmanager:GetSecretValue",
+                    "kms:Decrypt"
                   ],
                   "Resource": "*"
                 }
