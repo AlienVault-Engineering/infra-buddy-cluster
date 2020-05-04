@@ -292,7 +292,7 @@
                 "UseDefaultDomain",
                 {
                   "Fn::ImportValue": {
-                    "Fn::Sub": "${VPCStack}-PrimaryCertificate2"
+                    "Fn::Sub": "${VPCStack}-PrimaryCertificate"
                   }
                 },
                 {
