@@ -746,17 +746,6 @@
                 "kms:Decrypt"
               ],
               "Resource": "*"
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "s3:Get*",
-                "s3:List*"
-              ],
-              "Resource": [
-                "arn:aws:s3:::otx20-private",
-                "arn:aws:s3:::otx20-private/*"
-              ]
             }
           ]
         }
@@ -806,17 +795,6 @@
                     "kms:Decrypt"
                   ],
                   "Resource": "*"
-                },
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "s3:Get*",
-                    "s3:List*"
-                  ],
-                  "Resource": [
-                    "arn:aws:s3:::otx20-private",
-                    "arn:aws:s3:::otx20-private/*"
-                  ]
                 }
               ]
             }
